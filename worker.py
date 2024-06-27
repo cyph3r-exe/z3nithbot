@@ -1,19 +1,23 @@
 import discord
-from discord.ext import commands
-from secrets import BOT_TOKEN  # Import BOT_TOKEN from secrets.py
 
-# Create a bot instance with command prefix '?'
-bot = commands.Bot(command_prefix='?')
+BOT_TOKEN = ""  # Replace with your actual bot token, but be aware of the security risks
 
-# Event listener for when the bot has connected to the server
-@bot.event
+intents = discord.Intents.default()  # Use default intents for now
+intents.members = True
+# Create a Discord client instance
+client = discord.Client(intents=intents)
+
+@client.event
 async def on_ready():
-    print(f'Logged in as {bot.user.name}')
+    print(f'Logged in as {client.user} (ID: {client.user.id})')
 
-# Command listener for the '?hello' command
-@bot.command()
-async def hello(ctx):
-    await ctx.send('Hi')  # Sends a message to the channel where the command was issued
+@client.event
+async def on_message(message):
+    if message.author == client.user:  # Ignore messages from the bot itself
+        return
 
-# Use the BOT_TOKEN from the secrets file
-bot.run(BOT_TOKEN)
+    if message.content.lower() == '?hello':
+        await message.channel.send('Hi!')
+
+# Run the bot using the token
+client.run(BOT_TOKEN)
